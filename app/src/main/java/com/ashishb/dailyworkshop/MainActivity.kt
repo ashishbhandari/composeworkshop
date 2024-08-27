@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ashishb.dailyworkshop.ui.theme.DailyWorkshopTheme
+import com.ashishb.dailyworkshop.ui.login.LoginScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,9 +34,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             DailyWorkshopTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-                    PartialBottomSheet()
-
+//                    PartialBottomSheet()
+                    LoginScreen()
                 }
             }
         }
