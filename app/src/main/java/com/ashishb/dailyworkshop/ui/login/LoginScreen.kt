@@ -20,6 +20,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -54,19 +56,27 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
                 .fillMaxSize()
                 .padding(horizontal = 30.dp)
         ) {
+            // composable functions
             LoginField(value = "Login", onChange = {})
+
             PasswordField(
                 value = "password",
                 onChange = { },
                 submit = { },
+                onKeyboardDone = { loginViewModel.validatePasswordField() },
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(modifier = Modifier.height(10.dp))
+
             LabeledCheckbox(
                 label = "Remember Me",
-                onCheckChanged = { },
-                isChecked = false
+                onCheckChanged = {
+                    loginViewModel.updateRememberMe()
+                },
+                isChecked = loginUiState.rememberMe
             )
+
             Button(
                 onClick = { },
                 enabled = true,
@@ -125,18 +135,24 @@ fun PasswordField(
     value: String,
     onChange: (String) -> Unit,
     submit: () -> Unit,
-    modifier: Modifier = Modifier,
     label: String = "Password",
-    placeholder: String = "Enter your Password"
+    placeholder: String = "Enter your Password",
+    onKeyboardDone: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var password by rememberSaveable { mutableStateOf("") }
 
-    TextField(
+    OutlinedTextField(
         value = password,
         onValueChange = { password = it },
         label = { Text("Enter password") },
         visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onKeyboardDone()
+            }
+        )
     )
 
 }
@@ -150,15 +166,21 @@ fun LabeledCheckbox(
     onCheckChanged: () -> Unit,
     isChecked: Boolean
 ) {
-    Row(
-        Modifier
-            .clickable(
-                onClick = onCheckChanged
+    var checked by remember { mutableStateOf(false) }
+    Column {
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = { isChecked ->
+                    checked = isChecked
+                }
             )
-            .padding(4.dp)
-    ) {
-        Checkbox(checked = isChecked, onCheckedChange = null)
-        Spacer(Modifier.size(6.dp))
-        Text(label)
+            Spacer(Modifier.size(6.dp))
+            Text(label)
+        }
+
+        Text("Checkbox is ${if (checked) "checked" else "unchecked"}")
     }
+
 }
